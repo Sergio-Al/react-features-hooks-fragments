@@ -3,8 +3,7 @@ import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
 
 const NoteApp = () => {
-  const initialNotes = JSON.parse(localStorage.getItem("notes"));
-  const [notes, setNotes] = useState(initialNotes || []);
+  const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
 
@@ -26,8 +25,15 @@ const NoteApp = () => {
   };
 
   useEffect(() => {
+    const initialNotes = JSON.parse(localStorage.getItem("notes"));
+    if (initialNotes) {
+      setNotes(initialNotes);
+    }
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
-  });
+  }, [notes]);
 
   return (
     <div>
@@ -54,9 +60,13 @@ const App = (props) => {
   const [text, setText] = useState("");
 
   useEffect(() => {
+    console.log("this should only run once");
+  }, []); // only runs once
+
+  useEffect(() => {
     console.log("useEffect ran");
     document.title = count;
-  });
+  }, [count]); // only runs if count is updated
 
   return (
     <div>
