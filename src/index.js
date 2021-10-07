@@ -1,43 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
 
-const App = (props) => {
-  // const [count, setCount] = useState(props.defaultCount);
-  // const [text, setText] = useState("");
-  const [state, setState] = useState({ count: props.count, text: "" });
-
-  return (
-    <div>
-      <p>
-        The current {state.text || "count"} is {state.count}
-      </p>
-      <button
-        onClick={() =>
-          setState(
-            {
-              //...state,
-              count: state.count - 1,
-            } /* not recomended use ...state*/
-          )
-        }
-      >
-        -1
-      </button>
-      <button onClick={() => setState({ count: props.defaultCount })}>
-        Reset
-      </button>
-      <button onClick={() => setState({ count: state.count + 1 })}>+1</button>
-      <input
-        value={state.text}
-        onChange={(e) => setState({ text: e.target.value })}
-      />
-    </div>
-  );
-};
-
 const NoteApp = () => {
-  const [notes, setNotes] = useState([]);
+  const initialNotes = JSON.parse(localStorage.getItem("notes"));
+  const [notes, setNotes] = useState(initialNotes || []);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
 
@@ -57,6 +24,10 @@ const NoteApp = () => {
   const removeNote = (title) => {
     setNotes(notes.filter((note) => note.title !== title));
   };
+
+  useEffect(() => {
+    localStorage.setItem("notes", JSON.stringify(notes));
+  });
 
   return (
     <div>
@@ -78,25 +49,31 @@ const NoteApp = () => {
   );
 };
 
-// const App = (props) => {
-//   const [count, setCount] = useState(props.defaultCount);
-//   const [text, setText] = useState("");
+const App = (props) => {
+  const [count, setCount] = useState(props.defaultCount);
+  const [text, setText] = useState("");
 
-//   return (
-//     <div>
-//       <p>
-//         The current {text || "count"} is {count}
-//       </p>
-//       <button onClick={() => setCount(count - 1)}>-1</button>
-//       <button onClick={() => setCount(props.defaultCount)}>Reset</button>
-//       <button onClick={() => setCount(count + 1)}>+1</button>
-//       <input value={text} onChange={(e) => setText(e.target.value)} />
-//     </div>
-//   );
-// };
+  useEffect(() => {
+    console.log("useEffect ran");
+    document.title = count;
+  });
+
+  return (
+    <div>
+      <p>
+        The current {text || "count"} is {count}
+      </p>
+      <button onClick={() => setCount(count - 1)}>-1</button>
+      <button onClick={() => setCount(props.defaultCount)}>Reset</button>
+      <button onClick={() => setCount(count + 1)}>+1</button>
+      <input value={text} onChange={(e) => setText(e.target.value)} />
+    </div>
+  );
+};
 
 ReactDOM.render(
   <React.StrictMode>
+    {/* <App defaultCount={2} /> */}
     <NoteApp />
   </React.StrictMode>,
   document.getElementById("root")
