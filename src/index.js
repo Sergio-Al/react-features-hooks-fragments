@@ -1,33 +1,40 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
 
+const notesReducer = (state, action) => {
+  switch (action.type) {
+    case "POPULATE_NOTES":
+      return action.notes;
+    case "ADD_NOTE":
+      return [...state, { title: action.title, body: action.body }];
+    case "REMOVE_NOTE":
+      return state.filter((note) => note.title !== action.title);
+    default:
+      return state;
+  }
+};
+
 const NoteApp = () => {
-  const [notes, setNotes] = useState([]);
+  const [notes, dispatch] = useReducer(notesReducer, []);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
 
   const addNote = (e) => {
     e.preventDefault();
-    setNotes([
-      ...notes,
-      {
-        title,
-        body,
-      },
-    ]);
+    dispatch({ type: "ADD_NOTE", title, body });
     setTitle("");
     setBody("");
   };
 
   const removeNote = (title) => {
-    setNotes(notes.filter((note) => note.title !== title));
+    dispatch({ type: "REMOVE_NOTE", title });
   };
 
   useEffect(() => {
-    const initialNotes = JSON.parse(localStorage.getItem("notes"));
-    if (initialNotes) {
-      setNotes(initialNotes);
+    const notes = JSON.parse(localStorage.getItem("notes"));
+    if (notes) {
+      dispatch({ type: "POPULATE_NOTES", notes });
     }
   }, []);
 
